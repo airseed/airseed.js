@@ -117,8 +117,8 @@ window.airseed = (function () {
   };
 
   var _handlePopupMessage = function(event) {
-    if (event.origin !== AIRSEED_AUTH_URL_ORIGIN)
-      return;
+    if (event.origin !== AIRSEED_AUTH_URL_ORIGIN) return;
+    if (!event.data.access_token) return;
 
     var callbackUrl = POPUP_WINDOWS[event.data.popupName].callbackUrl;
 
