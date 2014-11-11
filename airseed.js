@@ -62,9 +62,9 @@ window.airseed = (function () {
   };
 
   var _initializeAuthButtons = function(elements, options) {
-    var authUrl = _formatAuthURL(airseed._appClientId, options.provider);
     for (i = 0; i < elements.length; i++) {
       elements[i].addEventListener('click', function() {
+        var authUrl = _formatAuthURL(airseed._appClientId, options.provider);
         if (options.flow == FLOW_POPUP_WINDOW) {
           _triggerPopup(authUrl, options.callbackUrl, options.provider);
         } else {
