@@ -37,7 +37,7 @@ window.airseed = (function () {
   };
 
   var _formatAuthURL = function(appClientId, provider) {
-    return AIRSEED_AUTH_URL += '?provider=' + provider + '&client_id=' + appClientId;
+    return AIRSEED_AUTH_URL + '?provider=' + provider + '&client_id=' + appClientId;
   };
 
   var _triggerPopup = function(url, callbackUrl, provider) {
@@ -62,9 +62,12 @@ window.airseed = (function () {
   };
 
   var _initializeAuthButtons = function(elements, options) {
+    console.log(options.provider);
     for (i = 0; i < elements.length; i++) {
       elements[i].addEventListener('click', function() {
         var authUrl = _formatAuthURL(airseed._appClientId, options.provider);
+        console.log(authUrl);
+        console.log(options.provider);
         if (options.flow == FLOW_POPUP_WINDOW) {
           _triggerPopup(authUrl, options.callbackUrl, options.provider);
         } else {
