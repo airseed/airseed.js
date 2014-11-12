@@ -51,7 +51,11 @@ This field is only applicable of `flow: 'popup_window'` is set.
 
 If this option is set, at the end of the Airseed Authentication flow, the popup will close, and immediately redirect the page to your callback URL. The query string in this redirect will include the user authenticated token parameters.
 
-If this option is left unset, the Airseed JS library will make a `/v1/users/me.json` request on behalf of the successfully authenticated user and pass it to your registerd success handler.
+If this option is left unset, the Airseed JS library will make a `/v1/users/me.json` request on behalf of the successfully authenticated user and pass it to your registered success handler.
+
+#### approvalPrompt
+
+This field, if set (`approvalPrompt: 'force'`), will force display the Airseed Permissions dialog that allows the user to toggle permissions to subsets of their data.
 
 ## Contributing
 

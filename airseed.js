@@ -8,6 +8,7 @@ window.airseed = (function () {
   var ERR_INVALID_ACCESS_TOKEN = "Airseed: Received invalid user access token.";
   var ERR_FAILED_USER_INFO  = "Airseed: Failed to fetch /v1/users/me.json endpoint info.";
 
+  var CLIENTSIDE_OPTIONS = ['selector', 'provider', 'flow', 'callbackUrl'];
   var FLOW_POPUP_WINDOW  = 'popup_window';
   var FLOW_PAGE_REDIRECT = 'page_redirect';
 
@@ -36,8 +37,19 @@ window.airseed = (function () {
       return elements;
   };
 
-  var _formatAuthURL = function(appClientId, provider) {
-    return AIRSEED_AUTH_URL += '?provider=' + provider + '&client_id=' + appClientId;
+  var _formatAuthURL = function(appClientId, options) {
+    var authUrl = AIRSEED_AUTH_URL + '?provider=' + options.provider + '&client_id=' + appClientId;
+
+    for (var property in options) {
+      // if not already handling the param
+      if (CLIENTSIDE_OPTIONS.indexOf(property) < 0) {
+        var key = property.replace(/([A-Z])/g, function($1) { return "_"+$1.toLowerCase(); });
+        var value = options[property];
+        authUrl += '&' + key + '=' + value;
+      }
+    }
+
+    return encodeURI(authUrl);
   };
 
   var _triggerPopup = function(url, callbackUrl, provider) {
@@ -64,7 +76,7 @@ window.airseed = (function () {
   var _initializeAuthButtons = function(elements, options) {
     for (i = 0; i < elements.length; i++) {
       elements[i].addEventListener('click', function() {
-        var authUrl = _formatAuthURL(airseed._appClientId, options.provider);
+        var authUrl = _formatAuthURL(airseed._appClientId, options);
         if (options.flow == FLOW_POPUP_WINDOW) {
           _triggerPopup(authUrl, options.callbackUrl, options.provider);
         } else {
