@@ -12,12 +12,8 @@ window.airseed = (function () {
   var FLOW_POPUP_WINDOW  = 'popup_window';
   var FLOW_PAGE_REDIRECT = 'page_redirect';
 
-  var AIRSEED_AUTH_URL_ORIGIN = 'https://auth.airseed.com';
-  var AIRSEED_AUTH_URL = AIRSEED_AUTH_URL_ORIGIN + '/oauth/authenticate';
-  var AIRSEED_TOKEN_VERIFICATION_URL = AIRSEED_AUTH_URL_ORIGIN + '/oauth/tokeninfo';
-
-  var AIRSEED_API_URL_ORIGIN = 'https://api.airseed.com';
-  var AIRSEED_API_ME_URL = AIRSEED_API_URL_ORIGIN + '/v1/users/me.json';
+  var AIRSEED_AUTH_BASE_URL = 'https://auth.airseed.com';
+  var AIRSEED_API_BASE_URL  = 'https://api.airseed.com';
 
   var POPUP_WIDTH  = 500;
   var POPUP_HEIGHT = 500;
@@ -37,8 +33,16 @@ window.airseed = (function () {
       return elements;
   };
 
+  var _getAuthBaseURL = function() {
+    return airseed._authBaseUrl || AIRSEED_AUTH_BASE_URL;
+  };
+
+  var _getApiBaseURL = function() {
+    return airseed._apiBaseUrl || AIRSEED_API_BASE_URL;
+  };
+
   var _formatAuthURL = function(appClientId, options) {
-    var authUrl = AIRSEED_AUTH_URL + '?provider=' + options.provider + '&client_id=' + appClientId;
+    var authUrl = _getAuthBaseURL() + '/oauth/authenticate?provider=' + options.provider + '&client_id=' + appClientId;
 
     for (var property in options) {
       // if not already handling the param
@@ -113,7 +117,7 @@ window.airseed = (function () {
         airseed._failureCallback({message: ERR_FAILED_USER_INFO});
       }
     };
-    tokenInfoRequest.open("get", AIRSEED_API_ME_URL, true);
+    tokenInfoRequest.open("get", _getApiBaseURL() + '/v1/users/me.json', true);
     tokenInfoRequest.setRequestHeader("Authorization", "Bearer " + userTokens.access_token);
     tokenInfoRequest.send();
   };
@@ -131,7 +135,7 @@ window.airseed = (function () {
   };
 
   var _handlePopupMessage = function(event) {
-    if (event.origin !== AIRSEED_AUTH_URL_ORIGIN) return;
+    if (event.origin !== _getAuthBaseURL()) return;
     if (!event.data.access_token) return;
 
     var callbackUrl = POPUP_WINDOWS[event.data.popupName].callbackUrl;
@@ -147,8 +151,8 @@ window.airseed = (function () {
         _redirectTokensToCallbackUrl(event.data, callbackUrl);
       }
     };
-    tokenInfoRequest.open("get", AIRSEED_TOKEN_VERIFICATION_URL + 
-      '?access_token=' + event.data.access_token, true);
+    tokenInfoRequest.open("get", _getAuthBaseURL() +
+      '/oauth/tokeninfo?access_token=' + event.data.access_token, true);
     tokenInfoRequest.send();
   };
 
@@ -179,6 +183,11 @@ window.airseed = (function () {
 
     failure: function(failureCallback) {
       this._failureCallback = failureCallback;
+    },
+
+    config: function(options) {
+      this._authBaseUrl = options.authBaseUrl;
+      this._apiBaseUrl = options.apiBaseUrl;
     }
   };
 
