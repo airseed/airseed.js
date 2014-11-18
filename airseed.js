@@ -3,7 +3,6 @@
 window.airseed = (function () {
   var ERR_MISSING_CLIENT_ID = "Airseed: Missing client ID. Please call airseed.init('...') with valid client ID first.";
   var ERR_MISSING_SELECTOR  = "Airseed: Missing CSS selector to bind click event.";
-  var ERR_MISSING_PROVIDER  = "Airseed: Missing authentication provider for Airseed auth. Please provide 'gmail', 'yahoo', or 'outlook'.";
   var ERR_MISSING_ELEMENTS  = "Airseed: Invalid selector. Unable to locate specified elements on page.";
   var ERR_INVALID_ACCESS_TOKEN = "Airseed: Received invalid user access token.";
   var ERR_FAILED_USER_INFO  = "Airseed: Failed to fetch /v1/users/me.json endpoint info.";
@@ -42,7 +41,9 @@ window.airseed = (function () {
   };
 
   var _formatAuthURL = function(appClientId, options) {
-    var authUrl = _getAuthBaseURL() + '/oauth/authenticate?provider=' + options.provider + '&client_id=' + appClientId;
+    var authUrl = _getAuthBaseURL() + '/oauth/authenticate?client_id=' + appClientId;
+    if (options.provider)
+      authUrl += '&provider=' + options.provider;
 
     for (var property in options) {
       // if not already handling the param
@@ -171,7 +172,6 @@ window.airseed = (function () {
     bind: function(options) {
       if (!this._appClientId) throw ERR_MISSING_CLIENT_ID;
       if (!options.selector) throw ERR_MISSING_SELECTOR;
-      if (!options.provider) throw ERR_MISSING_PROVIDER;
       var elements = _getElements(options.selector);
       if (!elements) throw ERR_MISSING_ELEMENTS;
       _initializeAuthButtons(elements, options);
