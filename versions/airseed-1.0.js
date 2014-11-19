@@ -59,12 +59,12 @@ window.airseed = (function () {
 
   var _triggerPopup = function(url, callbackUrl, provider) {
     var windowName = Math.random().toString(36).substring(7);
-    var left  = (screen.width / 2) - (POPUP_WIDTH / 2);
-    var top   = (screen.height / 2) - (POPUP_HEIGHT / 2);
+    var left  = (screen.availWidth / 2) - (POPUP_WIDTH / 2);
+    var top   = (screen.availHeight / 2) - (POPUP_HEIGHT / 2);
     var popup = window.open(
                   url + '&clientside=js', windowName,
                   "toolbar=yes, scrollbars=yes, resizable=yes, width=" + POPUP_WIDTH + 
-                  ", height=" + POPUP_HEIGHT + " top=" + top + ", left="+ left
+                  ", height=" + POPUP_HEIGHT + ", top=" + top + ", left="+ left
                 );
 
     POPUP_WINDOWS[windowName] = {
