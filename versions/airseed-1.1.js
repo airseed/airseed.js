@@ -1,4 +1,4 @@
-/* Airseed JS v1.0 */
+/* Airseed JS v1.1 */
 
 window.airseed = (function () {
   var ERR_MISSING_CLIENT_ID = "Airseed: Missing client ID. Please call airseed.init('...') with valid client ID first.";
