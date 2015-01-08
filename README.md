@@ -2,7 +2,7 @@
 
 Airseed Javascript API for user authentication and insights API.
 
-This library allows you to trigger the Airseed authentication flow from your webpage, and will provide to you information about the user who successfully authenticates.
+This library allows you to trigger the Airseed authentication flow from your webpage, and will provide to you information about the user who successfully authenticates. You may also use this library to make Airseed User API requests.
 
 ## Quick Start
 
