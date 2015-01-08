@@ -35,7 +35,7 @@ Provide the success and failure handlers for authentication:
       console.log(err); // 'err' is an object with a 'message' property
     });
 
-### Bind Parameters
+## Bind Parameters
 
 `airseed.bind(...)` can be configured for Gmail, Yahoo, or Outlook mail providers. It can also be configured to trigger the Airseed Authentication Flow as a popup or page redirect.
 
@@ -62,7 +62,7 @@ If this option is left unset, the Airseed JS library will make a `/v1/users/me.j
 
 This option, if set (`approvalPrompt: 'force'`), will force display the Airseed Permissions dialog that allows the user to toggle permissions to subsets of their data.
 
-### Airseed API Requests
+## Airseed API Requests
 
 `airseed.userAPI(accessToken, endpoint, callback, params)` is a method provided to make user API requests using the authentication tokens received from the Airseed OAuth2 flow. Please refer to the [API docs](https://www.airseed.com/api/docs) for endpoints and parameter reference. Example:
   
@@ -81,7 +81,7 @@ This required value is returned as part of the response object of the authentica
 
 #### endpoint
 
-This required parameter specifies the type of API request you wish to make.
+This required parameter specifies the type of API request you wish to make. All endpoints are listed in the [API docs](https://www.airseed.com/api/docs).
 
 #### callback
 
@@ -89,7 +89,7 @@ This optional callback takes in one parameter through which the API response wil
 
 #### params
 
-This optional parameter is an object containing key value pairs for parameters attached to the API request. 
+This optional parameter is an object containing key value pairs for parameters attached to the API request. All possible parameters are listed in the [API docs](https://www.airseed.com/api/docs) under each endpoint.
 
 ## Contributing
 
