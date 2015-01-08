@@ -91,6 +91,15 @@ This optional callback takes in one parameter through which the API response wil
 
 This optional parameter is an object containing key value pairs for parameters attached to the API request. All possible parameters are listed in the [API docs](https://www.airseed.com/api/docs) under each endpoint.
 
+## Change Log
+
+v1.2 (to be released)
+- method for refreshing of the access token
+
+v1.1
+- added extra parameter to successCallback for auth tokens
+- added userAPI method for Airseed User API requests
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/airseed.js/fork )
