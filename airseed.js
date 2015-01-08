@@ -4,8 +4,11 @@ window.airseed = (function () {
   var ERR_MISSING_CLIENT_ID = "Airseed: Missing client ID. Please call airseed.init('...') with valid client ID first.";
   var ERR_MISSING_SELECTOR  = "Airseed: Missing CSS selector to bind click event.";
   var ERR_MISSING_ELEMENTS  = "Airseed: Invalid selector. Unable to locate specified elements on page.";
+  var ERR_MISSING_ACCESS_TOKEN = "Airseed: Missing access token required for user API requests.";
+  var ERR_MISSING_ENDPINt   = "Airseed: Missing endpoint required for user API requests.";
   var ERR_INVALID_ACCESS_TOKEN = "Airseed: Received invalid user access token.";
   var ERR_FAILED_USER_INFO  = "Airseed: Failed to fetch /v1/users/me.json endpoint info.";
+  var ERR_FAILED_USER_API   = "Airseed: Failed to fetch a proper API endpoint response.";
 
   var CLIENTSIDE_OPTIONS = ['selector', 'provider', 'flow', 'callbackUrl'];
   var FLOW_POPUP_WINDOW  = 'popup_window';
@@ -99,6 +102,7 @@ window.airseed = (function () {
       throw ERR_INVALID_ACCESS_TOKEN;
     }
   };
+
   var _parseUserResponse = function(userInfoResponse) {
     try {
       return JSON.parse(userInfoResponse);
@@ -108,12 +112,20 @@ window.airseed = (function () {
     }
   };
 
+  var _parseApiResponse = function(apiResponse) {
+    try {
+      return JSON.parse(apiResponse);
+    } catch(err) {
+      throw ERR_FAILED_USER_API;
+    }
+  };
+
   var _fetchAndReturnUserInfo = function(userTokens) {
     var tokenInfoRequest = new XMLHttpRequest();
     tokenInfoRequest.onload = function reqListener () {
       var userInfo = _parseUserResponse(tokenInfoRequest.responseText);
       if (userInfo) {
-        airseed._successCallback(userInfo);
+        airseed._successCallback(userInfo, userTokens);
       } else {
         airseed._failureCallback({message: ERR_FAILED_USER_INFO});
       }
@@ -121,6 +133,26 @@ window.airseed = (function () {
     tokenInfoRequest.open("get", _getApiBaseURL() + '/v1/users/me.json', true);
     tokenInfoRequest.setRequestHeader("Authorization", "Bearer " + userTokens.access_token);
     tokenInfoRequest.send();
+  };
+
+  var _fetchAndReturnUserAPIResponse = function(accessToken, endpoint, callback, params) {
+    paramString = _serializeObjectToQueryString(params);
+
+    var apiRequest = new XMLHttpRequest();
+    apiRequest.onload = function reqListener () {
+      var apiResponse = _parseApiResponse(apiRequest.responseText);
+      if (apiResponse) {
+        callback(apiResponse);
+      } else {
+        throw ERR_FAILED_USER_API;
+      }
+    };
+    apiRequest.open("get",
+      _getApiBaseURL() + '/v1/users/me/' + endpoint + '.json' + '?' + paramString,
+      true
+    );
+    apiRequest.setRequestHeader("Authorization", "Bearer " + accessToken);
+    apiRequest.send();
   };
 
   var _redirectTokensToCallbackUrl = function(userTokens, callbackUrl) {
@@ -161,6 +193,15 @@ window.airseed = (function () {
     window.addEventListener("message", _handlePopupMessage, false);
   };
 
+  var _serializeObjectToQueryString = function(obj) {
+    var str = [];
+    for(var p in obj)
+      if (obj.hasOwnProperty(p)) {
+        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+      }
+    return str.join("&");
+  };
+
   airseed = {
     init: function (appClientId) {
       this._appClientId = appClientId;
@@ -183,6 +224,13 @@ window.airseed = (function () {
 
     failure: function(failureCallback) {
       this._failureCallback = failureCallback;
+    },
+
+    userAPI: function(accessToken, endpoint, callback, params) {
+      if (!accessToken) throw ERR_MISSING_ACCESS_TOKEN;
+      if (!endpoint) throw ERR_MISSING_ENDPOINT;
+      params = typeof params !== 'undefined' ? params : {};
+      _fetchAndReturnUserAPIResponse(accessToken, endpoint, callback, params);
     },
 
     config: function(options) {
