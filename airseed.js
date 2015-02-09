@@ -1,4 +1,4 @@
-/* Airseed JS v1.0 */
+/* Airseed JS v1.1 */
 
 window.airseed = (function () {
   var ERR_MISSING_CLIENT_ID = "Airseed: Missing client ID. Please call airseed.init('...') with valid client ID first.";
@@ -10,7 +10,7 @@ window.airseed = (function () {
   var ERR_FAILED_USER_INFO  = "Airseed: Failed to fetch /v1/users/me.json endpoint info.";
   var ERR_FAILED_USER_API   = "Airseed: Failed to fetch a proper API endpoint response.";
 
-  var CLIENTSIDE_OPTIONS = ['selector', 'provider', 'flow', 'callbackUrl'];
+  var CLIENTSIDE_OPTIONS = ['selector', 'provider', 'flow', 'callbackUrl', 'popupWidth', 'popupHeight'];
   var FLOW_POPUP_WINDOW  = 'popup_window';
   var FLOW_PAGE_REDIRECT = 'page_redirect';
 
@@ -60,20 +60,25 @@ window.airseed = (function () {
     return encodeURI(authUrl);
   };
 
-  var _triggerPopup = function(url, callbackUrl, provider) {
+  var _triggerPopup = function(url, options) {
+    var popupWidth = options.popup_width || POPUP_WIDTH;
+    var popupHeight = options.popup_height || POPUP_HEIGHT;
+
     var windowName = Math.random().toString(36).substring(7);
-    var left  = (screen.availWidth / 2) - (POPUP_WIDTH / 2);
-    var top   = (screen.availHeight / 2) - (POPUP_HEIGHT / 2);
+    var left  = (screen.availWidth / 2) - (popupWidth / 2);
+    var top   = (screen.availHeight / 2) - (popupHeight / 2);
+
+    var popupURL = url + '&clientside=js';
     var popup = window.open(
-                  url + '&clientside=js', windowName,
-                  "toolbar=yes, scrollbars=yes, resizable=yes, width=" + POPUP_WIDTH + 
-                  ", height=" + POPUP_HEIGHT + ", top=" + top + ", left="+ left
+                  popupURL, windowName,
+                  "toolbar=yes, scrollbars=yes, resizable=yes, width=" + popupWidth + 
+                  ", height=" + popupHeight + ", top=" + top + ", left="+ left
                 );
 
     POPUP_WINDOWS[windowName] = {
-      callbackUrl: callbackUrl,
+      callbackUrl: options.callbackUrl,
       popupWindow: popup,
-      provider: provider
+      provider: options.provider
     };
   };
 
@@ -86,7 +91,7 @@ window.airseed = (function () {
       elements[i].addEventListener('click', function() {
         var authUrl = _formatAuthURL(airseed._appClientId, options);
         if (options.flow == FLOW_POPUP_WINDOW) {
-          _triggerPopup(authUrl, options.callbackUrl, options.provider);
+          _triggerPopup(authUrl, options);
         } else {
           _triggerRedirect(authUrl, options.callbackUrl);
         }
